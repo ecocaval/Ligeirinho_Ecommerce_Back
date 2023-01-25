@@ -1,10 +1,12 @@
 //* Libraries
 import { ObjectId } from "mongodb";
-import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 
 //* Config
 import db from "../config/database.js";
+
+//* Utils
+import treatObjectPassword from "./utils/encryptPassword.js";
 
 export async function getAllUsers(req, res) {
     try {
@@ -30,7 +32,7 @@ export async function getUserById(req, res) {
             _id: ObjectId(userId)
         })
 
-        if (!user) return res.status(404).send("This user does not exist") 
+        if (!user) return res.status(404).send("This user does not exist")
 
         return res.send({
             ...user,
@@ -47,9 +49,7 @@ export async function createNewUser(req, res, next) {
 
     const userToCreate = { ...req.sanitizedBody }
 
-    delete userToCreate.confirmPassword
-
-    userToCreate.password = bcrypt.hashSync(userToCreate.password, 10)
+    treatObjectPassword(userToCreate)
 
     try {
 
@@ -57,7 +57,7 @@ export async function createNewUser(req, res, next) {
         const userEmailInUse = await db.collection('users').findOne({
             email: userToCreate.email
         })
-        if(userEmailInUse) return res.sendStatus(409)
+        if (userEmailInUse) return res.sendStatus(409)
 
         const response = await db.collection('users').insertOne({
             ...userToCreate,
@@ -80,6 +80,8 @@ export async function changeUserInfo(req, res) {
 
     const { userId } = { ...req.params }
     const userToUpdate = { ...req.sanitizedBody }
+
+    treatObjectPassword(userToUpdate)
 
     try {
         const response = await db.collection('users').updateOne({ _id: ObjectId(userId) }, {

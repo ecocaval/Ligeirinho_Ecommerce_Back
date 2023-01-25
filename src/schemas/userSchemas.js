@@ -1,3 +1,4 @@
+//* Libraries
 import Joi from '@hapi/joi'
 
 export const createNewUserSchema = Joi.object({
