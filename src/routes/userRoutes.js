@@ -7,6 +7,7 @@ import { changeUserInfo, createNewUser, deleteUserById, getAllUsers, getUserById
 
 //* Middlewares
 import { validateSchema } from "../middlewares/SchemaMiddleware.js";
+import { validateToken } from "../middlewares/TokenMiddleWare.js";
 
 //* Schemas
 import { changeUserInfoSchema, createNewUserSchema } from "../schemas/userSchemas.js";
@@ -15,13 +16,13 @@ const userRouter = Router();
 
 userRouter.get("/users", getAllUsers)
 
-userRouter.get("/users/:userId", getUserById) //! Must have validateToken after
+userRouter.get("/users/:userId", validateToken, getUserById)
 
 userRouter.post("/users", validateSchema(createNewUserSchema), createNewUser, createUserToken)
 
-userRouter.put("/users/:userId", validateSchema(changeUserInfoSchema), changeUserInfo) //! Must have validateToken after
+userRouter.put("/users/:userId", validateToken, validateSchema(changeUserInfoSchema), changeUserInfo)
 
-userRouter.delete("/users/:userId", deleteUserById, deleteTokenByUserId) //! Must have validateToken after
+userRouter.delete("/users/:userId", validateToken, deleteUserById, deleteTokenByUserId) 
 
 export default userRouter
 
