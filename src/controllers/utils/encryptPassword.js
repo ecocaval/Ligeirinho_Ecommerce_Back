@@ -7,6 +7,8 @@ function encryptPassword(password) {
 
 export default function treatObjectPassword(objectToTreat) {
     
+    if(!objectToTreat.password) return
+
     delete objectToTreat.confirmPassword
 
     objectToTreat.password = encryptPassword(objectToTreat.password)
