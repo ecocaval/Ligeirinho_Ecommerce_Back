@@ -9,7 +9,7 @@ export async function getAllCarts(req, res) {
     try {
         const carts = await db.collection('carts').find().toArray();
 
-        if (carts.length === 0) return res.status(404).send('No carts were found, create one') //! Temporary
+        if (carts.length === 0) return res.status(404).send('No carts were found, create one') 
 
         return res.send(carts.reverse())
 
