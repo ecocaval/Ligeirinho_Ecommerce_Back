@@ -15,16 +15,16 @@ const restaurantRouter = Router();
 
 restaurantRouter.get('restaurants', validateToken, getAllRestaurants);
 
-restaurantRouter.get('restaurants:restaurant:Id', validateToken, getRestaurantById);
+restaurantRouter.get('restaurants:restaurantId', validateToken, getRestaurantById);
 
-restaurantRouter.post('restaurants', validateSchema(createNewRestaurantSchema), validateToken, createNewRestaurant);
+restaurantRouter.post('restaurants', validateSchema(createNewRestaurantSchema), createNewRestaurant);
 
 restaurantRouter.get('products', validateToken, getAllProducts);
 
 restaurantRouter.get('products:productId', validateToken, getProductbyId);
 
-restaurantRouter.post('products', validateSchema(createNewProductSchema), validateToken, createNewProduct);
+restaurantRouter.post('products', validateSchema(createNewProductSchema), createNewProduct);
 
-restaurantRouter.delete('products:productId', validateToken, deleteProductById)
+restaurantRouter.delete('products:productId', deleteProductById)
 
 export default restaurantRouter;

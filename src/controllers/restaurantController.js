@@ -10,7 +10,7 @@ export async function getAllRestaurants(req, res) {
 
         const restaurants = await db.collection('restaurants').find().toArray();
 
-        if (users.length === 0) return res.status(404).send("No restaurants were found, create one.");
+        if (restaurants.length === 0) return res.status(404).send("No restaurants were found, create one.");
 
         return res.send(restaurants);
 
@@ -32,7 +32,7 @@ export async function getRestaurantById(req, res) {
             _id: ObjectId(restaurantId)
         });
 
-        if (!restaurant) return res.status(404).send("This user does not exist");
+        if (!restaurant) return res.status(404).send("This restaurant does not exist");
 
         return res.send({
             ...restaurant,
@@ -83,7 +83,7 @@ export async function getAllProducts(req, res) {
 
         const products = await db.collection('products').find().toArray();
 
-        if (products.length === 0) return res.status(404).send("No restaurants were found, create one.");
+        if (products.length === 0) return res.status(404).send("No products were found, create one.");
 
         return res.send(products)
 
@@ -105,7 +105,7 @@ export async function getProductbyId(req, res){
             _id: ObjectId(productId)
         });
 
-        if (!product) return res.status(404).send("This user does not exist");
+        if (!product) return res.status(404).send("This products does not exist");
 
         return res.send({
             ...product,
@@ -155,7 +155,7 @@ export async function deleteProductById(req, res) {
     const { productId } = { ...req.params }
 
     try {
-        const response = await db.collection('users').deleteOne({ _id: ObjectId(productId) })
+        const response = await db.collection('products').deleteOne({ _id: ObjectId(productId) })
 
         if (response.deletedCount < 1) return res.sendStatus(404)
 
