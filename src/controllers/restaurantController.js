@@ -183,6 +183,8 @@ export async function linkProductToRestaurant(req, res) {
 
         if (!restaurant) return res.sendStatus(401)
 
+        if (!restaurant.products) restaurant.products = []
+
         await db.collection('restaurants').updateOne({ _id: ObjectId(restaurantId) }, {
             $set: {
                 products: [...restaurant.products, req.insertedProductId]
