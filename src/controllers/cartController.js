@@ -18,7 +18,6 @@ export async function getAllCarts(req, res) {
         return res.sendStatus(500)
     }
 }
-
 export async function getUserCart(req, res) {
 
     const { userId } = { ...req.params }
@@ -26,8 +25,18 @@ export async function getUserCart(req, res) {
     try {
         const cart = await checkIfCartExists(userId)
 
-        if (!cart) return res.status(404).send("No cart was found linked to this user.")
+        if (!cart){
+            const createCart = await db.collection('carts').insertOne({
+                userId: ObjectId(userId),
+                creationDate: new Date(Date.now()),
+                products: []
+            })
+    
+            if (!(createCart.acknowledged === true)) return res.sendStatus(500)
 
+            return res.send(createCart.ops[0])
+        }
+        console.log(cart)
         return res.send(cart)
 
     } catch (err) {
