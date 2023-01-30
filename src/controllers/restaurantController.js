@@ -338,13 +338,11 @@ export async function changeProductById(req, res) {
             }
         }
 
-        const response = await db.collection('products').updateOne({ _id: ObjectId(productId) }, {
+        await db.collection('products').updateOne({ _id: ObjectId(productId) }, {
             $set: {
                 ...productUpdate
             }
         })
-
-        console.log(response);
 
         return res.sendStatus(200)
 
