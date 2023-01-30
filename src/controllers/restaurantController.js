@@ -48,6 +48,36 @@ export async function getRestaurantById(req, res) {
     };
 }
 
+export async function changeRestaurantById(req, res) {
+
+    const { restaurantId } = { ...req.params }
+    const restaurantUpdate = { ...req.body }
+
+    try {
+
+        const restaurant = await db.collection('restaurants').findOne({
+            _id: ObjectId(restaurantId)
+        });
+
+        if (!restaurant) return res.status(404).send("This restaurant does not exist");
+
+        await db.collection('restaurants').updateOne({_id: ObjectId(restaurantId)}, {
+            $set: {
+                ...restaurantUpdate
+            }
+        })
+
+        return res.sendStatus(200);
+
+    } catch (err) {
+
+        console.log(err);
+        return res.sendStatus(500);
+
+    };
+
+}
+
 export async function createNewRestaurant(req, res) {
 
     const restaurantToCreate = { ...req.sanitizedBody };
@@ -185,11 +215,11 @@ export async function likeRestaurant(req, res) {
 
     try {
 
-        const response = await db.collection('likedRestaurants').findOne({userId: ObjectId(userId)})
+        const response = await db.collection('likedRestaurants').findOne({ userId: ObjectId(userId) })
 
-        if([...response.restaurantsLiked].includes(restaurantId)) return res.sendStatus(409)
+        if ([...response.restaurantsLiked].includes(restaurantId)) return res.sendStatus(409)
 
-        await db.collection('likedRestaurants').updateOne({userId: ObjectId(userId)}, {
+        await db.collection('likedRestaurants').updateOne({ userId: ObjectId(userId) }, {
             $set: {
                 restaurantsLiked: [...response.restaurantsLiked, restaurantId]
             }
@@ -210,22 +240,22 @@ export async function dislikeRestaurant(req, res) {
 
     try {
 
-        const response = await db.collection('likedRestaurants').findOne({userId: ObjectId(userId)})
+        const response = await db.collection('likedRestaurants').findOne({ userId: ObjectId(userId) })
 
         let updatedRestaurants = [...response.restaurantsLiked]
 
         let indexToDelete = null
 
-        for(let i = 0; i < updatedRestaurants.length; i++) {
-            if(updatedRestaurants[i] === restaurantId) {
+        for (let i = 0; i < updatedRestaurants.length; i++) {
+            if (updatedRestaurants[i] === restaurantId) {
                 indexToDelete = i;
                 break;
             }
         }
-        
+
         updatedRestaurants.splice(indexToDelete, 1)
 
-        await db.collection('likedRestaurants').updateOne({userId: ObjectId(userId)}, {
+        await db.collection('likedRestaurants').updateOne({ userId: ObjectId(userId) }, {
             $set: {
                 restaurantsLiked: updatedRestaurants
             }
@@ -246,6 +276,12 @@ export async function createNewProduct(req, res, next) {
 
     try {
 
+        const restaurant = await db.collection('restaurants').findOne({
+            _id: ObjectId(restaurantId)
+        });
+
+        if (!restaurant) return res.status(404).send("This restaurant does not exist");
+
         const product = await db.collection('products').findOne({
             restaurantId: ObjectId(restaurantId),
             name: productToCreate.name
@@ -253,22 +289,69 @@ export async function createNewProduct(req, res, next) {
 
         if (product) return res.sendStatus(409);
 
-        const response = await db.collection('products').insertOne({
-            ...productToCreate,
-            restaurantId: ObjectId(restaurantId),
-            creationDate: new Date(Date.now())
-        });
+        if (restaurant.categories.includes(productToCreate.category)) {
 
-        req.insertedProductId = response.insertedId
+            const response = await db.collection('products').insertOne({
+                ...productToCreate,
+                restaurantId: ObjectId(restaurantId),
+                creationDate: new Date(Date.now())
+            });
 
-        if (!(response.acknowledged === true)) return res.sendStatus(500)
+            req.insertedProductId = response.insertedId
 
-        next()
+            if (!(response.acknowledged === true)) return res.sendStatus(500)
+
+            next()
+        }
+
+        return res.status(400).send(`Category must match restaurant categories ${restaurant.categories.map((category) => `${category} `)}`)
 
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
     };
+}
+
+export async function changeProductById(req, res) {
+
+    const { productId, restaurantId } = { ...req.params };
+
+    const productUpdate = { ...req.body }
+
+    try {
+
+        const product = await db.collection('products').findOne({
+            _id: ObjectId(productId),
+            restaurantId: ObjectId(restaurantId)
+        });
+        if (!product) return res.status(404).send("This products does not exist");
+
+        const restaurant = await db.collection('restaurants').findOne({
+            _id: ObjectId(restaurantId)
+        });
+        if (!restaurant) return res.status(404).send("This restaurant does not exist");
+
+        if (productUpdate.category) {
+            if (!restaurant.categories.includes(productUpdate.category)) {
+                return res.status(400).send(`Category must match restaurant categories ${restaurant.categories.map((category) => `${category} `)}`)
+            }
+        }
+
+        await db.collection('products').updateOne({ restaurantId: ObjectId(restaurantId) }, {
+            $set: {
+                ...productUpdate
+            }
+        })
+
+        return res.sendStatus(200)
+
+    } catch (err) {
+
+        console.log(err);
+        return res.sendStatus(500);
+
+    };
+
 }
 
 export async function linkProductToRestaurant(req, res) {

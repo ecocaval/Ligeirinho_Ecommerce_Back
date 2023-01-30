@@ -3,10 +3,10 @@ import { Router } from "express";
 
 //* Controllers
 import {
-    createNewProduct, createNewRestaurant, deleteProductById,
-    dislikeRestaurant, getAllProducts, getAllRestaurantProducts, getAllRestaurants,
-    getProductbyId, getRestaurantById, getUserLikedRestaurants, likeRestaurant,
-    linkProductToRestaurant
+    changeProductById, changeRestaurantById, createNewProduct, createNewRestaurant,
+    deleteProductById, dislikeRestaurant, getAllProducts, getAllRestaurantProducts,
+    getAllRestaurants, getProductbyId, getRestaurantById, getUserLikedRestaurants,
+    likeRestaurant, linkProductToRestaurant
 } from "../controllers/restaurantController.js";
 
 //* Middlewares
@@ -22,6 +22,8 @@ restaurantRouter.get('/restaurants', validateToken, getAllRestaurants);
 
 restaurantRouter.get('/restaurants/:restaurantId', validateToken, getRestaurantById);
 
+restaurantRouter.put('/restaurants/:restaurantId', changeRestaurantById);
+
 restaurantRouter.post('/restaurants', validateSchema(createNewRestaurantSchema), createNewRestaurant);
 
 restaurantRouter.get('/products', validateToken, getAllProducts);
@@ -35,6 +37,8 @@ restaurantRouter.delete('/likedRestaurants/:userId', validateToken, dislikeResta
 restaurantRouter.get('/restaurants/:restaurantId/products', validateToken, getAllRestaurantProducts);
 
 restaurantRouter.get('/restaurants/:restaurantId/products/:productId', validateToken, getProductbyId);
+
+restaurantRouter.put('/restaurants/:restaurantId/products/:productId', changeProductById);
 
 restaurantRouter.post('/restaurants/:restaurantId/products', validateSchema(createNewProductSchema), createNewProduct, linkProductToRestaurant);
 
