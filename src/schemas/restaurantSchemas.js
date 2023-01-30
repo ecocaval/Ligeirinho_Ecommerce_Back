@@ -8,6 +8,7 @@ export const createNewRestaurantSchema = Joi.object({
     smallImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
     typeOfFood: Joi.string().min(1).max(10).required(),
     priceRank: Joi.number().min(1).max(5).required(),
+    categories: Joi.array().items(Joi.string()).required()
 })
 
 export const createNewProductSchema = Joi.object({
@@ -16,4 +17,5 @@ export const createNewProductSchema = Joi.object({
     price: Joi.number().invalid(0).required(),
     bigImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
     smallImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
+    category: Joi.string().required()
 })
