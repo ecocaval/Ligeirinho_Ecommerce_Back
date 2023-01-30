@@ -6,7 +6,7 @@ export const createNewRestaurantSchema = Joi.object({
     description: Joi.string(),
     bigImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
     smallImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
-    typeOfFood: Joi.string().min(1).max(10).required(),
+    typeOfFood: Joi.string().min(1).max(10).valid('Japonesa','Brasileira','Pizza','Doces','Lanches','Açaí').required(),
     priceRank: Joi.number().min(1).max(5).required(),
     categories: Joi.array().items(Joi.string()).required()
 })
