@@ -95,6 +95,25 @@ export async function getAllProducts(req, res) {
     }
 }
 
+export async function getUserLikedRestaurants(req, res) {
+
+    const { userId } = req.params
+
+    try {
+        const likedRestaurantes = await db.collection('likedRestaurants').find({
+            userId: ObjectId(userId)
+        }).toArray()
+
+        if (likedRestaurantes.length === 0) return res.sendStatus(404);
+
+        return res.send(likedRestaurantes)
+    } catch (err) {
+        console.log(err)
+        return res.sendStatus(500)
+    }
+
+}
+
 export async function getAllRestaurantProducts(req, res) {
 
     const { restaurantId } = { ...req.params }
@@ -108,11 +127,29 @@ export async function getAllRestaurantProducts(req, res) {
         return res.send(products.reverse())
 
     } catch (err) {
-
         console.log(err);
         return res.sendStatus(500);
-
     }
+}
+
+export async function createLikedRestaurants(req, res) {
+
+    const userId = req.insertedIdForToken
+
+    try {
+
+        const insert = await db.collection("likedRestaurants").insertOne({
+            userId: ObjectId(userId),
+            restaurantsLiked: []
+        })
+
+        return res.sendStatus(201)
+
+    } catch (err) {
+        console.log(err)
+        return res.sendStatus(500);
+    }
+
 }
 
 export async function getProductbyId(req, res) {
@@ -139,6 +176,67 @@ export async function getProductbyId(req, res) {
         return res.sendStatus(500);
 
     };
+}
+
+export async function likeRestaurant(req, res) {
+
+    const { restaurantId } = { ...req.body }
+    const { userId } = { ...req.params }
+
+    try {
+
+        const response = await db.collection('likedRestaurants').findOne({userId: ObjectId(userId)})
+
+        if([...response.restaurantsLiked].includes(restaurantId)) return res.sendStatus(409)
+
+        await db.collection('likedRestaurants').updateOne({userId: ObjectId(userId)}, {
+            $set: {
+                restaurantsLiked: [...response.restaurantsLiked, restaurantId]
+            }
+        })
+
+        return res.sendStatus(200)
+
+    } catch (err) {
+        console.log(err)
+        return res.sendStatus(500)
+    }
+}
+
+export async function dislikeRestaurant(req, res) {
+
+    const { restaurantId } = { ...req.body }
+    const { userId } = { ...req.params }
+
+    try {
+
+        const response = await db.collection('likedRestaurants').findOne({userId: ObjectId(userId)})
+
+        let updatedRestaurants = [...response.restaurantsLiked]
+
+        let indexToDelete = null
+
+        for(let i = 0; i < updatedRestaurants.length; i++) {
+            if(updatedRestaurants[i] === restaurantId) {
+                indexToDelete = i;
+                break;
+            }
+        }
+        
+        updatedRestaurants.splice(indexToDelete, 1)
+
+        await db.collection('likedRestaurants').updateOne({userId: ObjectId(userId)}, {
+            $set: {
+                restaurantsLiked: updatedRestaurants
+            }
+        })
+
+        return res.sendStatus(200)
+
+    } catch (err) {
+        console.log(err)
+        return res.sendStatus(500)
+    }
 }
 
 export async function createNewProduct(req, res, next) {

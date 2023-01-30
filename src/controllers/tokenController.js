@@ -20,7 +20,7 @@ export async function getAllTokens(req, res) {
     }
 }
 
-export async function createUserToken(req, res) {
+export async function createUserToken(req, res, next) {
 
     const userId = req.insertedIdForToken
 
@@ -35,7 +35,7 @@ export async function createUserToken(req, res) {
 
         if (!(response.acknowledged === true)) return res.sendStatus(500)
 
-        return res.sendStatus(201)
+        next()
 
     } catch (err) {
         console.log(err)

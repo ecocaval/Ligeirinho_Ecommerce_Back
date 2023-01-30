@@ -4,8 +4,9 @@ import { Router } from "express";
 //* Controllers
 import {
     createNewProduct, createNewRestaurant, deleteProductById,
-    getAllProducts, getAllRestaurantProducts, getAllRestaurants,
-    getProductbyId, getRestaurantById, linkProductToRestaurant
+    dislikeRestaurant, getAllProducts, getAllRestaurantProducts, getAllRestaurants,
+    getProductbyId, getRestaurantById, getUserLikedRestaurants, likeRestaurant,
+    linkProductToRestaurant
 } from "../controllers/restaurantController.js";
 
 //* Middlewares
@@ -17,20 +18,26 @@ import { createNewProductSchema, createNewRestaurantSchema } from "../schemas/re
 
 const restaurantRouter = Router();
 
-restaurantRouter.get('/restaurants', validateToken, getAllRestaurants); 
+restaurantRouter.get('/restaurants', validateToken, getAllRestaurants);
 
-restaurantRouter.get('/restaurants/:restaurantId', validateToken, getRestaurantById); 
+restaurantRouter.get('/restaurants/:restaurantId', validateToken, getRestaurantById);
 
-restaurantRouter.post('/restaurants', validateSchema(createNewRestaurantSchema), createNewRestaurant); 
+restaurantRouter.post('/restaurants', validateSchema(createNewRestaurantSchema), createNewRestaurant);
 
-restaurantRouter.get('/products', validateToken, getAllProducts); 
+restaurantRouter.get('/products', validateToken, getAllProducts);
 
-restaurantRouter.get('/restaurants/:restaurantId/products', validateToken, getAllRestaurantProducts); 
+restaurantRouter.get('/likedRestaurants/:userId', validateToken, getUserLikedRestaurants);
 
-restaurantRouter.get('/restaurants/:restaurantId/products/:productId', validateToken, getProductbyId); 
+restaurantRouter.put('/likedRestaurants/:userId', validateToken, likeRestaurant);
 
-restaurantRouter.post('/restaurants/:restaurantId/products', validateSchema(createNewProductSchema), createNewProduct, linkProductToRestaurant); 
+restaurantRouter.delete('/likedRestaurants/:userId', validateToken, dislikeRestaurant);
 
-restaurantRouter.delete('/restaurants/:restaurantId/products/:productId', deleteProductById); 
+restaurantRouter.get('/restaurants/:restaurantId/products', validateToken, getAllRestaurantProducts);
+
+restaurantRouter.get('/restaurants/:restaurantId/products/:productId', validateToken, getProductbyId);
+
+restaurantRouter.post('/restaurants/:restaurantId/products', validateSchema(createNewProductSchema), createNewProduct, linkProductToRestaurant);
+
+restaurantRouter.delete('/restaurants/:restaurantId/products/:productId', deleteProductById);
 
 export default restaurantRouter;

@@ -1,5 +1,6 @@
 //* Libraries
 import { Router } from "express";
+import { createLikedRestaurants } from "../controllers/restaurantController.js";
 
 //* Controllers
 import { createUserToken, deleteTokenByUserId } from "../controllers/tokenController.js";
@@ -18,7 +19,7 @@ userRouter.get("/users", getAllUsers)
 
 userRouter.get("/users/:userId", validateToken, getUserById)
 
-userRouter.post("/users", validateSchema(createNewUserSchema), createNewUser, createUserToken)
+userRouter.post("/users", validateSchema(createNewUserSchema), createNewUser, createUserToken, createLikedRestaurants)
 
 userRouter.put("/users/:userId", validateToken, validateSchema(changeUserInfoSchema), changeUserInfo)
 
