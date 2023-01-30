@@ -34,9 +34,9 @@ export async function getUserCart(req, res) {
     
             if (!(createCart.acknowledged === true)) return res.sendStatus(500)
 
-            return res.send(createCart.ops[0])
+            return res.send(createCart)
         }
-        console.log(cart)
+
         return res.send(cart)
 
     } catch (err) {
