@@ -301,7 +301,7 @@ export async function createNewProduct(req, res, next) {
 
             if (!(response.acknowledged === true)) return res.sendStatus(500)
 
-            next()
+            return next()
         }
 
         return res.status(400).send(`Category must match restaurant categories ${restaurant.categories.map((category) => `${category} `)}`)
@@ -329,6 +329,7 @@ export async function changeProductById(req, res) {
         const restaurant = await db.collection('restaurants').findOne({
             _id: ObjectId(restaurantId)
         });
+
         if (!restaurant) return res.status(404).send("This restaurant does not exist");
 
         if (productUpdate.category) {
@@ -337,11 +338,13 @@ export async function changeProductById(req, res) {
             }
         }
 
-        await db.collection('products').updateOne({ restaurantId: ObjectId(restaurantId) }, {
+        const response = await db.collection('products').updateOne({ _id: ObjectId(productId) }, {
             $set: {
                 ...productUpdate
             }
         })
+
+        console.log(response);
 
         return res.sendStatus(200)
 

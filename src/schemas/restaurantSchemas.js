@@ -12,7 +12,7 @@ export const createNewRestaurantSchema = Joi.object({
 })
 
 export const createNewProductSchema = Joi.object({
-    name: Joi.string().min(3).max(15).required(),
+    name: Joi.string().min(3).max(20).required(),
     description: Joi.string().min(1).required(),
     price: Joi.number().invalid(0).required(),
     bigImages: Joi.array().items(Joi.string().pattern(/^[a-zA-Z0-9-_]+[:./\\]+([a-zA-Z0-9 -_./:=&"'?%+@#$!])+$/)).required(),
